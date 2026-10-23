@@ -1,0 +1,15 @@
+# Зависимости проекта HTTP-Client
+#
+# Отдельные библиотеки не требуются: клиент полностью реализован средствами
+# стандартной библиотеки Python 3.10+ (socket, ssl, argparse, json,
+# urllib.parse, email.utils, gzip, zlib, calendar, pathlib).
+#
+# Установка окружения:
+#   python -m venv .venv
+#   .venv\Scripts\activate        (Windows)  /  source .venv/bin/activate (Unix)
+#   pip install -r requirements.txt
+#
+# Опционально (только для распаковки Content-Encoding: br):
+#   brotli>=1.1.0
+#
+# Проверено в чистом окружении: pip list --format=freeze -> пусто.

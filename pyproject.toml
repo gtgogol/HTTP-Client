@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "http-client-course"
+version = "1.0.0"
+description = "Учебный HTTP/1.1-клиент с CLI на стандартной библиотеке Python"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+http-client = "httpclient.cli:main"
+
+[tool.setuptools]
+packages = ["httpclient"]
