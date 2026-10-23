@@ -350,5 +350,47 @@ class CliTests(ServerMixin):
         self.assertEqual(code, 0)  # тестовый сервер отвечает 200 на неизвестные пути
 
 
+class ImportSmokeTests(unittest.TestCase):
+    """Модуль импортируется любым способом, в том числе из __main__-модуля проекта."""
+
+    def test_import_package_module(self):
+        from httpclient import cli
+
+        self.assertTrue(callable(cli.main))
+
+    def test_import_from_main_script(self):
+        # Главный риск: client.py в корне и пакет httpclient с одноимённым модулем.
+        import client as entry_point
+
+        self.assertTrue(callable(entry_point.main))
+
+
+class CliShapeTests(unittest.TestCase):
+    def test_expected_flags_exist(self):
+        from httpclient.cli import build_parser
+
+        parser = build_parser()
+        options = {
+            action.dest
+            for action in parser._actions
+            if action.option_strings
+        }
+        for flag in (
+            "method_flag",
+            "json_body",
+            "form_fields",
+            "data",
+            "data_file",
+            "headers",
+            "params",
+            "timeout",
+            "cookies",
+            "cookie_jar",
+            "output",
+            "output_kind",
+        ):
+            self.assertIn(flag, options)
+
+
 if __name__ == "__main__":
     unittest.main()

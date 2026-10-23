@@ -22,6 +22,7 @@
 
 ```
 client.py                     точка входа CLI (python client.py ...)
+run_http_client.py            точка входа без установки пакета
 httpclient/
   cli.py                      разбор аргументов и сценарий выполнения
   client.py                   транспорт: соединение, отправка, приём, cookie
@@ -56,7 +57,12 @@ pip install -r requirements.txt
 ```bash
 python client.py <URL> [METHOD] [параметры]
 python -m httpclient <URL> [METHOD] [параметры]
+python run_http_client.py <URL> [METHOD] [параметры]
 ```
+
+Файл `httpclient/cli.py` запускать напрямую (`python httpclient/cli.py`) не нужно:
+внутри пакета используются относительные импорты. Вместо этого есть
+`run_http_client.py`.
 
 Можно установить пакет и получить команду `http-client`:
 

@@ -11,12 +11,13 @@
 import argparse
 import sys
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 from . import __version__
 from .client import DEFAULT_TIMEOUT, HttpClient
 from .config import CONFIG_ENV_VAR, ClientConfig
-from .cookie_store import CookieJar, StoredCookie
+from .cookie_store import CookieJar
 from .errors import HttpClientError
 from .output_writer import save_body, save_headers, save_summary
 from .request_builder import RequestOptions, build_request
@@ -25,6 +26,15 @@ from .url_tools import split_url
 
 DEFAULT_METHOD = "GET"
 
+
+@dataclass
+class CliOverrides:
+    """Что из аргументов командной строки задано пользователем явно."""
+
+    method: bool = False
+    host: bool = False
+    content_type: bool = False
+    cookie: bool = False
 OUTPUT_KIND_HELP = (
     "что сохранять: body (тело, по умолчанию), headers (статус и заголовки), "
     "json (статус, заголовки и тело в JSON)"
