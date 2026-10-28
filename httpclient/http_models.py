@@ -85,7 +85,7 @@ class HttpRequest:
     # Валидация и нормализация данных
     def __post_init__(self) -> None:
         method = self.method.strip().upper()
-        # RFC 9110, 5.6.2: метод — непустой токен из ASCII.
+        # метод — непустой текст.
         if not method or any(ch not in _TCHAR for ch in method):
             raise HttpError(f"Некорректный метод запроса: {self.method!r}")
         self.method = method

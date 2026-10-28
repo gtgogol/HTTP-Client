@@ -8,7 +8,7 @@ from .cookie_store import CookieJar
 from .errors import ConnectionFailedError, HttpError, HttpTimeoutError
 from .http_models import HttpRequest, HttpResponse
 from .response_parser import _Reader, parse_response
-from .url_tools import default_cookie_path, split_url
+from .url_tools import default_cookie_path, ParsedUrl
 
 DEFAULT_TIMEOUT = 10.0
 
@@ -37,9 +37,7 @@ class HttpClient:
             if not any(name.lower() == "cookie" for name in request.headers):
                 request.cookies = [
                     (cookie.name, cookie.value)
-                    for cookie in self.cookie_jar.cookies_for(
-                        parsed.domain, parsed.path, parsed.secure
-                    )
+                    for cookie in self.cookie_jar.cookies_for(parsed.domain, parsed.path, parsed.secure)
                 ]
 
         payload = request.to_bytes(parsed)
@@ -56,11 +54,12 @@ class HttpClient:
                 )
         return response
 
-    def _exchange(self, parsed, payload: bytes, method: str) -> HttpResponse:
-        """Таймаут и раньше работал на весь запрос; имя оставлено для читаемости."""
+    def _exchange(self, parsed: ParsedUrl, payload: bytes, method: str) -> HttpResponse:
+        """Установить HTTP-соединение, отправить запрос и получить ответ."""
         try:
             sock = socket.create_connection(
-                (parsed.host, parsed.port), timeout=self.timeout
+                (parsed.host, parsed.port),
+                timeout=self.timeout,
             )
         except socket.timeout:
             raise HttpTimeoutError(
@@ -76,20 +75,6 @@ class HttpClient:
             ) from None
 
         try:
-            if parsed.secure:
-                try:
-                    sock = ssl.create_default_context().wrap_socket(
-                        sock, server_hostname=parsed.host
-                    )
-                except socket.timeout:
-                    raise HttpTimeoutError(
-                        f"Истёк таймаут TLS-рукопожатия с {parsed.host!r}"
-                    ) from None
-                except ssl.SSLError as exc:
-                    raise ConnectionFailedError(
-                        f"Ошибка TLS с {parsed.host!r}: {exc}"
-                    ) from None
-
             try:
                 sock.sendall(payload)
                 return parse_response(_Reader(sock), method)
@@ -97,10 +82,10 @@ class HttpClient:
                 raise HttpTimeoutError(
                     f"Истёк таймаут ожидания ответа ({self.timeout:g} с)"
                 ) from None
-            except ssl.SSLError as exc:
-                raise ConnectionFailedError(f"Ошибка TLS: {exc}") from None
             except OSError as exc:
-                raise ConnectionFailedError(f"Сетевая ошибка: {exc}") from None
+                raise ConnectionFailedError(
+                    f"Сетевая ошибка: {exc}"
+                ) from None
         finally:
             try:
                 sock.close()

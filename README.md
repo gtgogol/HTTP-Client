@@ -5,11 +5,10 @@
 
 ## Возможности
 
-- внутренняя реализация HTTP/1.1 поверх `socket` и `ssl` (TLS с проверкой сертификата);
+- внутренняя реализация HTTP/1.1 поверх `socket`;
 - указание URL и метода запроса (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, ...);
 - тело запроса: JSON, `application/x-www-form-urlencoded`, произвольный текст или файл;
-- автоматические заголовки по RFC 9110/9112: `Host`, `User-Agent`, `Date`,
-  `Accept`, `Accept-Encoding`, `Connection`, `Content-Length`, `Content-Type`;
+- автоматические заголовки: `Host`, `User-Agent`, `Date`, `Accept`, `Accept-Encoding`, `Connection`, `Content-Length`, `Content-Type`;
 - кастомные заголовки с проверкой на подмену строк (CRLF-инъекции);
 - таймаут ожидания ответа;
 - сохранение ответа в файл: тело, заголовки или JSON-сводка;
